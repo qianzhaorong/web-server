@@ -1,18 +1,22 @@
 # coding:utf-8
+"""
+读取urls.py文件中的路由映射，调用相应的处理函数
+[
+    (r'/', index, name='index')
+]
+"""
+from urls import urls
+from views import *
 
 
-def route_index(request):
-    """主页的处理函数，读取主页的html文件，构造HTTP报文返回"""
-    pass
+class Router:
+    def __init__(self, request):
+        self.request = request
 
+    def get_response(self):
+        path = self.request.path
+        callback = urls.get(path, self.route_404)
+        return callback(self.request)
 
-def route(request):
-    """接收一个Request对象，进行路由转发"""
-    r = {
-        '/static': route_static,
-        '/': route_index,
-        '/login': route_login,
-        '/register': route_register,
-    }
-    route_handle = r.get(request.path, error_404)
-    return route_handle(request)
+    def route_404(self, request):
+        return Response("404", "Not Found", "")
